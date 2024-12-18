@@ -10,7 +10,7 @@ import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const fetchUser = cache((issueId: number) =>
@@ -18,8 +18,9 @@ const fetchUser = cache((issueId: number) =>
 );
 
 const IssueDetailPage = async ({ params }: Props) => {
+  const resolvedParams = await params;
   const session = await getServerSession(authOptions);
-  const issue = await fetchUser(parseInt(params.id));
+  const issue = await fetchUser(parseInt(resolvedParams.id));
   if (!issue) return notFound();
   return (
     <Grid columns={{ initial: "1", sm: "5" }} gap="5">
@@ -40,7 +41,8 @@ const IssueDetailPage = async ({ params }: Props) => {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const issue = await fetchUser(parseInt(params.id));
+  const resolvedParams = await params;
+  const issue = await fetchUser(parseInt(resolvedParams.id));
 
   return {
     title: issue?.title,

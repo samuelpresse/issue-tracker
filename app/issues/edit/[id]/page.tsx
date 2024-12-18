@@ -1,28 +1,21 @@
 import React from "react";
 import prisma from "@/prisma/client";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
-import IssueFormSkeleton from "./loading";
-
-// dynamic import are no longer supported for server component in newer version of next.js
-// For a newer version of next.js, this need to be exported in a client component and then imported here
-const IssueForm = dynamic(() => import("@/app/issues/_components/IssueForm"), {
-  ssr: false,
-  loading: () => <IssueFormSkeleton />,
-});
+import IssueFormClientWrapper from "../../_components/IssueFormClientWrapper";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const EditIssuePage = async ({ params }: Props) => {
+  const resolvedParams = await params;
   const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: parseInt(resolvedParams.id) },
   });
 
   if (!issue) notFound();
 
-  return <IssueForm issue={issue} />;
+  return <IssueFormClientWrapper issue={issue} />;
 };
 
 export default EditIssuePage;
