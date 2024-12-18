@@ -1,6 +1,6 @@
 import { IssueStatusBadge, Link } from "@/app/components";
 import { Issue, Status } from "@prisma/client";
-import { ArrowUpIcon } from "@radix-ui/react-icons";
+import { ArrowUpIcon, ArrowDownIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import NextLink from "next/link";
 
@@ -9,6 +9,7 @@ import React from "react";
 export interface IssueQuery {
   status: Status;
   orderBy: keyof Issue;
+  orderDirection: "asc" | "desc";
   page: string;
 }
 
@@ -18,27 +19,44 @@ interface Props {
 }
 
 const IssueTable = ({ searchParams, issues }: Props) => {
+  const getNextOrderDirection = (columnValue: keyof Issue) => {
+    if (searchParams.orderBy === columnValue) {
+      return searchParams.orderDirection === "asc" ? "desc" : "asc";
+    }
+    return "asc";
+  };
   return (
     <Table.Root variant="surface">
       <Table.Header>
         <Table.Row>
-          {columns.map((column) => (
-            <Table.ColumnHeaderCell
-              key={column.value}
-              className={column.className}
-            >
-              <NextLink
-                href={{
-                  query: { ...searchParams, orderBy: column.value },
-                }}
+          {columns.map((column) => {
+            const isSorted = searchParams.orderBy === column.value;
+            const nextDirection = getNextOrderDirection(column.value);
+            return (
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column.className}
               >
-                {column.label}
-              </NextLink>
-              {column.value == searchParams.orderBy && (
-                <ArrowUpIcon className="inline" />
-              )}
-            </Table.ColumnHeaderCell>
-          ))}
+                <NextLink
+                  href={{
+                    query: {
+                      ...searchParams,
+                      orderBy: column.value,
+                      orderDirection: nextDirection,
+                    },
+                  }}
+                >
+                  {column.label}
+                </NextLink>
+                {isSorted &&
+                  (searchParams.orderDirection === "asc" ? (
+                    <ArrowUpIcon className="inline" />
+                  ) : (
+                    <ArrowDownIcon className="inline" />
+                  ))}
+              </Table.ColumnHeaderCell>
+            );
+          })}
         </Table.Row>
       </Table.Header>
       <Table.Body>

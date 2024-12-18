@@ -18,8 +18,11 @@ const IssuesPage = async ({
     : undefined;
 
   const where = { status };
+
+  const orderDirection =
+    resolvedSearchParams.orderDirection === "desc" ? "desc" : "asc";
   const orderBy = columnNames.includes(resolvedSearchParams.orderBy)
-    ? { [resolvedSearchParams.orderBy]: "asc" }
+    ? { [resolvedSearchParams.orderBy]: orderDirection }
     : undefined;
 
   const page = parseInt(resolvedSearchParams.page) || 1;
