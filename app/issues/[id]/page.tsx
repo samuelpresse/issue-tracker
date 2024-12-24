@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
+import StatusSelect from "./StatusSelect";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -21,6 +22,7 @@ const IssueDetailPage = async ({ params }: Props) => {
   const resolvedParams = await params;
   const session = await getServerSession(authOptions);
   const issue = await fetchUser(parseInt(resolvedParams.id));
+
   if (!issue) return notFound();
   return (
     <Grid columns={{ initial: "1", sm: "5" }} gap="5">
@@ -31,6 +33,7 @@ const IssueDetailPage = async ({ params }: Props) => {
         <Box className="col-span-1">
           <Flex direction="column" gap="4">
             <AssigneeSelect issue={issue} />
+            <StatusSelect issue={issue} />
             <EditIssueButton issueId={issue.id} />
             <DeleteIssueButton issueId={issue.id} />
           </Flex>

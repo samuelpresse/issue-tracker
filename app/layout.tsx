@@ -7,6 +7,7 @@ import NavBar from "./NavBar";
 import { Container, Theme } from "@radix-ui/themes";
 import AuthProvider from "./auth/provider";
 import QueryClientProvider from "./QueryClientProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
               <NavBar />
               <main className="p-5">
                 <Container>{children}</Container>
+                <Toaster />
               </main>
               {/* <ThemePanel/> */}
             </Theme>
